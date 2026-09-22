@@ -1,41 +1,52 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame } from "remotion";
+import {
+  AbsoluteFill,
+  interpolate,
+  useCurrentFrame,
+} from "remotion";
 
-/**
- * Shared animated background used behind every scene so the whole video
- * feels like one connected motion system instead of separate static
- * slides. Three layers, each drifting at a different speed for parallax:
- *  1. Two soft blurred "blob" shapes slowly floating
- *  2. A faint dot grid drifting diagonally
- *  3. A diagonal light sweep that glides through periodically
- */
 export const SceneBackground: React.FC<{
   base: string;
   blobColorA: string;
   blobColorB: string;
   dotColor?: string;
-}> = ({ base, blobColorA, blobColorB, dotColor = "rgba(255,255,255,0.06)" }) => {
+}> = ({
+  base,
+  blobColorA,
+  blobColorB,
+  dotColor = "rgba(255,255,255,0.06)",
+}) => {
   const frame = useCurrentFrame();
 
-  const blobAX = 120 + Math.sin(frame / 55) * 60;
-  const blobAY = 260 + Math.cos(frame / 70) * 50;
-  const blobBX = 900 + Math.cos(frame / 60) * 70;
-  const blobBY = 1500 + Math.sin(frame / 65) * 60;
+  const driftA = Math.sin(frame / 48);
+  const driftB = Math.cos(frame / 64);
 
-  const gridShiftX = (frame * 0.4) % 90;
-  const gridShiftY = (frame * 0.25) % 90;
+  const blobAX = 120 + driftA * 90;
+  const blobAY = 280 + driftB * 70;
 
-  const sweepX = ((frame * 6) % 2600) - 800;
+  const blobBX = 930 + driftB * 100;
+  const blobBY = 1510 + driftA * 90;
+
+  const gridShiftX = (frame * 0.7) % 110;
+  const gridShiftY = (frame * 0.42) % 110;
+
+  const sweepProgress = (frame % 210) / 210;
+  const sweepX = interpolate(
+    sweepProgress,
+    [0, 1],
+    [-900, 2100]
+  );
 
   const dots: React.ReactNode[] = [];
-  for (let row = -1; row < 24; row++) {
-    for (let col = -1; col < 14; col++) {
+
+  for (let row = -2; row < 20; row++) {
+    for (let col = -2; col < 13; col++) {
       dots.push(
         <circle
           key={`${row}-${col}`}
-          cx={col * 90 + gridShiftX}
-          cy={row * 90 + gridShiftY}
-          r={2.5}
+          cx={col * 110 + gridShiftX}
+          cy={row * 110 + gridShiftY}
+          r={2.2}
           fill={dotColor}
         />
       );
@@ -43,50 +54,81 @@ export const SceneBackground: React.FC<{
   }
 
   return (
-    <AbsoluteFill style={{ backgroundColor: base, overflow: "hidden" }}>
+    <AbsoluteFill
+      style={{
+        backgroundColor: base,
+        overflow: "hidden",
+      }}
+    >
+      {/* Large atmospheric glow */}
       <div
         style={{
           position: "absolute",
-          width: 620,
-          height: 620,
+          width: 760,
+          height: 760,
           borderRadius: "50%",
-          left: blobAX - 310,
-          top: blobAY - 310,
+          left: blobAX - 380,
+          top: blobAY - 380,
           background: blobColorA,
-          filter: "blur(90px)",
-          opacity: 0.55,
+          filter: "blur(115px)",
+          opacity: 0.48,
+          transform: `scale(${1 + driftA * 0.04})`,
         }}
       />
+
+      {/* Secondary glow */}
       <div
         style={{
           position: "absolute",
-          width: 700,
-          height: 700,
+          width: 820,
+          height: 820,
           borderRadius: "50%",
-          left: blobBX - 350,
-          top: blobBY - 350,
+          left: blobBX - 410,
+          top: blobBY - 410,
           background: blobColorB,
-          filter: "blur(100px)",
-          opacity: 0.45,
+          filter: "blur(125px)",
+          opacity: 0.42,
+          transform: `scale(${1 + driftB * 0.05})`,
         }}
       />
+
+      {/* Moving dot field */}
       <svg
         width={1080}
         height={1920}
-        style={{ position: "absolute", top: 0, left: 0 }}
+        viewBox="0 0 1080 1920"
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: 0.75,
+        }}
       >
         {dots}
       </svg>
+
+      {/* Slow diagonal light sweep */}
       <div
         style={{
           position: "absolute",
-          top: -200,
+          top: -300,
           left: sweepX,
-          width: 260,
-          height: 2320,
+          width: 320,
+          height: 2500,
           background:
-            "linear-gradient(100deg, transparent, rgba(255,255,255,0.10), transparent)",
-          transform: "rotate(18deg)",
+            "linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.03) 40%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.03) 60%, transparent 100%)",
+          transform: "rotate(17deg)",
+          opacity: 0.7,
+        }}
+      />
+
+      {/* Soft vignette gives the composition more depth */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(circle at center, transparent 35%, rgba(0,0,0,0.08) 100%)",
+          pointerEvents: "none",
         }}
       />
     </AbsoluteFill>
