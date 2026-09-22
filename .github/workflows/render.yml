@@ -30,6 +30,17 @@ jobs:
       - name: Install voiceover tools (Piper, open-source text-to-speech)
         run: pip install piper-tts pydub
 
+      - name: Install ffmpeg (needed by pydub to encode the mp3 voiceover)
+        # GitHub's ubuntu-latest (24.04) runner image no longer ships ffmpeg
+        # by default. pydub's AudioSegment.export(..., format="mp3") shells
+        # out to a system ffmpeg/avconv binary - without it, the "Stitch
+        # voiceover together" step fails immediately with:
+        #   FileNotFoundError: [Errno 2] No such file or directory: 'ffmpeg'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          ffmpeg -version | head -n 1
+
       - name: Download British English voice
         run: |
           set -euo pipefail
