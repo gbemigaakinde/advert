@@ -1,0 +1,31 @@
+name: Render Fahmid Advert
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Render the video
+        run: npx remotion render src/index.ts FahmidAdvert out/fahmid-advert.mp4
+
+      - name: Upload the finished video
+        uses: actions/upload-artifact@v4
+        with:
+          name: fahmid-advert-video
+          path: out/fahmid-advert.mp4
+          retention-days: 30
