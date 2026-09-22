@@ -29,7 +29,7 @@ export const FahmidAdvert: React.FC = () => {
         public/voiceover.mp3 and uncomment the line below. See
         VOICEOVER_SCRIPT.md for a script timed to match each scene.
       */}
-      {/* <Audio src={staticFile("voiceover.mp3")} /> */}
+      <Audio src={staticFile("voiceover.mp3")} />
       <TransitionSeries>
         <TransitionSeries.Sequence durationInFrames={100}>
           <LogoReveal />
