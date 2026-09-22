@@ -1,5 +1,4 @@
 import React from "react";
-import { Audio, staticFile } from "remotion";
 import { TransitionSeries, linearTiming } from "@remotion/transitions";
 import { wipe } from "@remotion/transitions/wipe";
 import { slide } from "@remotion/transitions/slide";
@@ -24,12 +23,6 @@ const TRANSITION_FRAMES = 15;
 export const FahmidAdvert: React.FC = () => {
   return (
     <>
-      {/*
-        VOICEOVER: once you have a recording, save it as
-        public/voiceover.mp3 and uncomment the line below. See
-        VOICEOVER_SCRIPT.md for a script timed to match each scene.
-      */}
-      <Audio src={staticFile("voiceover.mp3")} />
       <TransitionSeries>
         <TransitionSeries.Sequence durationInFrames={100}>
           <LogoReveal />
