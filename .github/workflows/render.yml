@@ -1,5 +1,7 @@
 name: Render Fahmid Advert
 
+# Runs automatically whenever you push to main, and can also be run
+# manually from the "Actions" tab on GitHub with the "Run workflow" button.
 on:
   push:
     branches: [main]
@@ -17,8 +19,45 @@ jobs:
         with:
           node-version: 20
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Install dependencies
         run: npm install
+
+      - name: Install voiceover tools (Piper, open-source text-to-speech)
+        run: pip install piper-tts pydub
+
+      - name: Download British English voice
+        run: |
+          mkdir -p voiceover/voice
+          curl -sSL -o voiceover/voice/en_GB-alan-medium.onnx \
+            https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/alan/medium/en_GB-alan-medium.onnx
+          curl -sSL -o voiceover/voice/en_GB-alan-medium.onnx.json \
+            https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/alan/medium/en_GB-alan-medium.onnx.json
+
+      - name: Generate voiceover lines
+        run: |
+          mkdir -p voiceover/parts
+          i=0
+          while IFS= read -r line || [ -n "$line" ]; do
+            [ -z "$line" ] && continue
+            i=$((i+1))
+            num=$(printf "%02d" "$i")
+            echo "$line" | python3 -m piper \
+              --model voiceover/voice/en_GB-alan-medium.onnx \
+              --output_file "voiceover/parts/${num}.wav"
+          done < voiceover/script.txt
+
+      - name: Stitch voiceover together
+        run: |
+          mkdir -p public
+          python3 voiceover/build_audio.py
+
+      - name: Install Chrome headless shell (needed by Remotion)
+        run: npx remotion browser ensure
 
       - name: Render the video
         run: npx remotion render src/index.ts FahmidAdvert out/fahmid-advert.mp4
