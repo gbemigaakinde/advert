@@ -1,5 +1,9 @@
 import React from "react";
-import { AbsoluteFill, Sequence, interpolate, useCurrentFrame } from "remotion";
+import { Audio, staticFile } from "remotion";
+import { TransitionSeries, linearTiming } from "@remotion/transitions";
+import { wipe } from "@remotion/transitions/wipe";
+import { slide } from "@remotion/transitions/slide";
+import { fade } from "@remotion/transitions/fade";
 import {
   LogoReveal,
   LocationEst,
@@ -11,51 +15,89 @@ import {
   CallToAction,
 } from "./Scenes";
 
-// Each entry: [Component, durationInFrames]
-// Total must add up to the Root.tsx duration (900 frames / 30s at 30fps)
-const scenes: Array<{ Component: React.FC; duration: number }> = [
-  { Component: LogoReveal, duration: 90 }, // 0:00 - 0:03
-  { Component: LocationEst, duration: 90 }, // 0:03 - 0:06
-  { Component: Tagline, duration: 120 }, // 0:06 - 0:10
-  { Component: Stats, duration: 150 }, // 0:10 - 0:15
-  { Component: Values, duration: 120 }, // 0:15 - 0:19
-  { Component: Testimonial, duration: 120 }, // 0:19 - 0:23
-  { Component: Programs, duration: 90 }, // 0:23 - 0:26
-  { Component: CallToAction, duration: 120 }, // 0:26 - 0:30
-];
-
-// Wraps a scene with a quick fade-in / fade-out so cuts aren't jarring
-const FadeWrap: React.FC<{ duration: number; children: React.ReactNode }> = ({
-  duration,
-  children,
-}) => {
-  const frame = useCurrentFrame();
-  const fadeFrames = 10;
-  const opacity = interpolate(
-    frame,
-    [0, fadeFrames, duration - fadeFrames, duration],
-    [0, 1, 1, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-  return <AbsoluteFill style={{ opacity }}>{children}</AbsoluteFill>;
-};
+// Durations below the scenes (before transitions eat into them) sum to
+// 1005 frames; 7 transitions x 15 frames of overlap = 105 frames removed,
+// giving a final composition length of 900 frames (30s at 30fps) - this
+// MUST match the durationInFrames set in Root.tsx.
+const TRANSITION_FRAMES = 15;
 
 export const FahmidAdvert: React.FC = () => {
-  let cursor = 0;
-
   return (
-    <AbsoluteFill style={{ backgroundColor: "#FFFFFF" }}>
-      {scenes.map(({ Component, duration }, i) => {
-        const from = cursor;
-        cursor += duration;
-        return (
-          <Sequence key={i} from={from} durationInFrames={duration}>
-            <FadeWrap duration={duration}>
-              <Component />
-            </FadeWrap>
-          </Sequence>
-        );
-      })}
-    </AbsoluteFill>
+    <>
+      {/*
+        VOICEOVER: once you have a recording, save it as
+        public/voiceover.mp3 and uncomment the line below. See
+        VOICEOVER_SCRIPT.md for a script timed to match each scene.
+      */}
+      {/* <Audio src={staticFile("voiceover.mp3")} /> */}
+      <TransitionSeries>
+        <TransitionSeries.Sequence durationInFrames={100}>
+          <LogoReveal />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={wipe({ direction: "from-left" })}
+          timing={linearTiming({ durationInFrames: TRANSITION_FRAMES })}
+        />
+
+        <TransitionSeries.Sequence durationInFrames={90}>
+          <LocationEst />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={slide({ direction: "from-right" })}
+          timing={linearTiming({ durationInFrames: TRANSITION_FRAMES })}
+        />
+
+        <TransitionSeries.Sequence durationInFrames={130}>
+          <Tagline />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={wipe({ direction: "from-top" })}
+          timing={linearTiming({ durationInFrames: TRANSITION_FRAMES })}
+        />
+
+        <TransitionSeries.Sequence durationInFrames={150}>
+          <Stats />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={slide({ direction: "from-left" })}
+          timing={linearTiming({ durationInFrames: TRANSITION_FRAMES })}
+        />
+
+        <TransitionSeries.Sequence durationInFrames={120}>
+          <Values />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={fade()}
+          timing={linearTiming({ durationInFrames: TRANSITION_FRAMES })}
+        />
+
+        <TransitionSeries.Sequence durationInFrames={130}>
+          <Testimonial />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={wipe({ direction: "from-right" })}
+          timing={linearTiming({ durationInFrames: TRANSITION_FRAMES })}
+        />
+
+        <TransitionSeries.Sequence durationInFrames={110}>
+          <Programs />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={slide({ direction: "from-bottom" })}
+          timing={linearTiming({ durationInFrames: TRANSITION_FRAMES })}
+        />
+
+        <TransitionSeries.Sequence durationInFrames={175}>
+          <CallToAction />
+        </TransitionSeries.Sequence>
+      </TransitionSeries>
+    </>
   );
 };
