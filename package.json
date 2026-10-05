@@ -4,17 +4,28 @@
   "private": true,
   "scripts": {
     "start": "remotion studio src/index.ts",
-    "build": "remotion render src/index.ts FahmidAdvert out/fahmid-advert.mp4"
+    "build": "remotion render src/index.ts FahmidAdvert out/fahmid-advert.mp4",
+    "capture": "node portal-capture/capture.mjs",
+    "audio": "python3 narration/build_audio.py",
+    "build:guide": "remotion render src/index.ts ParentPortalGuide out/fahmid-parent-portal-guide.mp4 --crf=18",
+    "start:guide": "remotion studio src/index.ts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.526",
     "@remotion/transitions": "4.0.526",
-    "remotion": "4.0.526",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "remotion": "4.0.526"
   },
   "devDependencies": {
+    "@fontsource/dm-sans": "^5.3.0",
+    "@fontsource/dm-serif-display": "^5.3.0",
+    "@fontsource/plus-jakarta-sans": "^5.3.0",
+    "@phosphor-icons/web": "^2.1.2",
+    "@sparticuz/chromium": "^153.0.0",
     "@types/react": "18.3.1",
+    "lucide": "^0.469.0",
+    "puppeteer-core": "^24.43.1",
     "typescript": "5.5.4"
   }
 }
