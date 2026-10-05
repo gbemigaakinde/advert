@@ -1,0 +1,71 @@
+[
+  { "id": "intro", "min": 11, "lines": [
+    "Welcome to the Fahmid Nursery and Primary School Parent Portal.",
+    "In this short guide, we'll show you how to log in and access your child's school information, results, tests, and fee records."
+  ]},
+  { "id": "access", "min": 15, "lines": [
+    "To begin, open your internet browser on your phone, tablet, or computer, and visit the Fahmid School website.",
+    "From there, open the school portal."
+  ]},
+  { "id": "login", "min": 34, "lines": [
+    "This is the login screen. You only need two things to sign in.",
+    "First, enter the email address connected to your child's account, or your child's admission number.",
+    "You can sign in using the email address registered with the school, or your child's admission number.",
+    "Next, enter the password provided for the portal account.",
+    "When both details are entered, tap Sign In."
+  ]},
+  { "id": "loading", "min": 9, "lines": [
+    "After you sign in, the system securely checks your account and takes you to your child's portal."
+  ]},
+  { "id": "overview", "min": 14, "lines": [
+    "This is the pupil portal. From here, you can move between the different sections to see important information about your child."
+  ]},
+  { "id": "profile", "min": 14, "lines": [
+    "The Profile section gives you an overview of your child's school information, including their identity and academic details.",
+    "You will find the name, admission number, class, and class teacher here."
+  ]},
+  { "id": "nav", "min": 13, "lines": [
+    "On a phone, the navigation bar at the bottom makes it easy to move between Profile, Tests and Exams, Results, and Fees."
+  ]},
+  { "id": "tests", "min": 26, "lines": [
+    "Tap Tests and Exams. When a test or examination has been published for your child's class, it will appear here.",
+    "You can see the subject, the type of test, the time allowed, and whether the test is open.",
+    "When a test is open, a Start Test button appears. We won't start one now.",
+    "After a test has been completed, the portal marks it as Completed."
+  ]},
+  { "id": "results", "min": 34, "lines": [
+    "To view your child's academic results, tap Results.",
+    "Under Academic Session, you can choose the current session, or an earlier one.",
+    "Your child's results are organised by academic session and term. You can see each subject, the continuous assessment score, the examination score, the total, and the grade."
+  ]},
+  { "id": "report", "min": 18, "lines": [
+    "When you want a complete report card, tap View and Print Report Card.",
+    "You can then view the report card, and print or save it when needed."
+  ]},
+  { "id": "fees", "min": 26, "lines": [
+    "Now tap Fees.",
+    "Here you can see the fee for the current term, how much has been paid, and the outstanding balance.",
+    "Below that, the payment history lists each payment with its date, term, and payment method."
+  ]},
+  { "id": "receipt", "min": 18, "lines": [
+    "You can also review previous payments, and open the available receipt for a payment.",
+    "If you need to confirm or keep a record of a payment, you can open the corresponding receipt."
+  ]},
+  { "id": "forgot", "min": 22, "lines": [
+    "If you forget your password, tap Forgot your password on the login screen.",
+    "Enter the email address registered with the portal, and tap Send Reset Link.",
+    "Then follow the reset link sent to your inbox."
+  ]},
+  { "id": "register", "min": 11, "lines": [
+    "Portal accounts are created or managed by the school. If you need an account, or need your account details corrected, please contact the school."
+  ]},
+  { "id": "logout", "min": 9, "lines": [
+    "When you are finished, especially when using a shared device, remember to log out of the portal."
+  ]},
+  { "id": "devices", "min": 9, "lines": [
+    "You can use the portal on your phone, tablet, or computer. It adapts to fit your screen."
+  ]},
+  { "id": "summary", "min": 16, "lines": [
+    "With the Fahmid School Portal, you can conveniently access your child's school information, online tests, academic results, report cards, and fee records from one place."
+  ]}
+]
