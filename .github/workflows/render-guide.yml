@@ -30,6 +30,10 @@ on:
   repository_dispatch:
     types: [portal-updated]   # optional: lets the school repo trigger a fresh video after a portal change
 
+# Needed so the workflow can publish the finished video on the Releases page.
+permissions:
+  contents: write
+
 jobs:
   render:
     runs-on: ubuntu-latest
@@ -81,11 +85,33 @@ jobs:
       - name: Render the video
         run: npx remotion render src/index.ts ParentPortalGuide out/fahmid-parent-portal-guide.mp4 --crf=18
 
-      - name: Upload the finished video
+      - name: Make a smaller copy for WhatsApp and slow connections
+        run: |
+          ffmpeg -y -i out/fahmid-parent-portal-guide.mp4 \
+            -vf "scale=1280:720" -c:v libx264 -preset slow -crf 31 \
+            -c:a aac -b:a 96k -movflags +faststart \
+            out/fahmid-parent-portal-guide-small.mp4
+          ls -lh out/*.mp4
+
+      - name: Publish the videos on the Releases page (direct MP4 download, no zip)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG=guide-latest
+          # Replace the previous release so the link below always points at the newest video.
+          gh release delete "$TAG" --cleanup-tag --yes || true
+          gh release create "$TAG" \
+            out/fahmid-parent-portal-guide.mp4 \
+            out/fahmid-parent-portal-guide-small.mp4 \
+            --title "Parent Portal Guide video" \
+            --notes "Built on $(date -u +'%d %B %Y at %H:%M UTC'). Full quality: fahmid-parent-portal-guide.mp4. Smaller copy for WhatsApp and slow connections: fahmid-parent-portal-guide-small.mp4." \
+            --latest
+
+      - name: Keep a backup copy as a run artifact
         uses: actions/upload-artifact@v4
         with:
           name: fahmid-parent-portal-guide
-          path: out/fahmid-parent-portal-guide.mp4
+          path: out/*.mp4
           retention-days: 30
 
       - name: Upload the captured screens (for checking)
