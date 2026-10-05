@@ -205,10 +205,11 @@ export const SceneShell: React.FC<{ sc: ScenePlan; narration: boolean; chip?: [s
   return (
     <AbsoluteFill style={{ opacity: o }}>
       {chip && <Chip n={chip[0]} label={chip[1]} />}
+      {/* Drawn BEFORE the scene content, so the phone and windows sit on top of it */}
+      <div style={{ position: "absolute", right: 60, bottom: 40, fontFamily: sansStack, fontSize: 17, color: "#6B7A99", letterSpacing: 0.3 }}>Demonstration screens · fictional pupil data</div>
       {children}
       <Brand />
       {swish && <Sfx at={0} name="swish" volume={0.12} />}
-      <div style={{ position: "absolute", right: 60, bottom: 40, fontFamily: sansStack, fontSize: 17, color: "#6B7A99", letterSpacing: 0.3 }}>Demonstration screens · fictional pupil data</div>
       {narration && sc.lines.map((st, k) => (
         <Sequence key={k} from={st} durationInFrames={sc.lineDurs[k] + 6}><Audio src={staticFile(`audio/narr/${sc.id}_${k}.mp3`)} volume={1} /></Sequence>
       ))}
