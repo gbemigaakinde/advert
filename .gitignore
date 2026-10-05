@@ -1,3 +1,6 @@
 node_modules
 out
 .DS_Store
+# Generated fresh by the workflow every time (see README-GUIDE.md):
+public/portal
+public/audio
