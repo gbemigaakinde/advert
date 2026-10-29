@@ -1,0 +1,92 @@
+name: Render Grammar Short
+
+# Builds the 57-second vertical "4 grammar mistakes" video for social media.
+# Run it from the Actions tab ("Render Grammar Short" > Run workflow),
+# or it runs by itself when the grammar video files change.
+on:
+  workflow_dispatch:
+    inputs:
+      amina_voice:
+        description: "Amina's voice (edge-tts name)"
+        default: "en-NG-EzinneNeural"
+        required: false
+      tobi_voice:
+        description: "Tobi's voice (edge-tts name)"
+        default: "en-NG-AbeoNeural"
+        required: false
+  push:
+    branches: [main]
+    paths:
+      - "src/grammar/**"
+      - "narration/grammar.json"
+      - "narration/build_grammar_audio.py"
+      - ".github/workflows/render-grammar.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          npm install
+          pip install edge-tts numpy
+          sudo apt-get update -y && sudo apt-get install -y ffmpeg
+
+      - name: Install Chrome headless shell (needed by Remotion)
+        run: npx remotion browser ensure
+
+      - name: Record the voices and sound effects
+        env:
+          AMINA_VOICE: ${{ github.event.inputs.amina_voice || 'en-NG-EzinneNeural' }}
+          TOBI_VOICE: ${{ github.event.inputs.tobi_voice || 'en-NG-AbeoNeural' }}
+        run: |
+          # If the voice service is unreachable, still make a video (sound effects only).
+          python3 narration/build_grammar_audio.py || python3 narration/build_grammar_audio.py --silent
+
+      - name: Render the video
+        run: npx remotion render src/grammar/index.ts GrammarShort out/fahmid-grammar-short.mp4 --crf=18
+
+      - name: Check the video (length and sound)
+        run: |
+          ffprobe -v error -show_entries format=duration -of csv=p=0 out/fahmid-grammar-short.mp4
+          ffprobe -v error -select_streams a -show_entries stream=codec_name -of csv=p=0 out/fahmid-grammar-short.mp4
+          ls -lh out/
+
+      - name: Publish on the Releases page (direct MP4 download)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG=grammar-latest
+          gh release delete "$TAG" --cleanup-tag --yes || true
+          gh release create "$TAG" \
+            out/fahmid-grammar-short.mp4 \
+            out/grammar-subtitles.srt \
+            --title "Grammar Short video" \
+            --notes "Built on $(date -u +'%d %B %Y at %H:%M UTC'). MP4 plus .srt captions." \
+            --latest
+
+      - name: Keep a backup copy as a run artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fahmid-grammar-short
+          path: |
+            out/fahmid-grammar-short.mp4
+            out/grammar-subtitles.srt
+          retention-days: 30
