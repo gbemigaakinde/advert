@@ -1,6 +1,6 @@
 # Grammar Short
 
-57-second 9:16 video: four common mistakes (your/you're, could of, then/than, lose/loose), told as a class group chat between Tobi and Amina.
+56-second 9:16 video: four common mistakes (your/you're, could of, less/fewer, Me and Tola), told by one mascot, Amina, over a class group chat.
 
 - Words and timing: `narration/grammar.json` (change a line, then re-run the workflow)
 - Scenes and mascots: `src/grammar/Grammar.tsx`, `src/grammar/Mascots.tsx`
