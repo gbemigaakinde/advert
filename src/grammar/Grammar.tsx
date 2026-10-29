@@ -14,7 +14,7 @@ const SERIF = "'DM Serif Display', Georgia, serif";
 const SANS = "'DM Sans', Arial, sans-serif";
 const RED = "#C8341F";
 
-export type Timing = { voiced: boolean; lines: Record<string, { at: number; dur: number; who: string }> };
+export type Timing = { built?: boolean; voiced: boolean; lines: Record<string, { at: number; dur: number; who: string }> };
 
 export const fallbackTiming = (): Timing => {
   const lines: Timing["lines"] = {};
@@ -162,8 +162,7 @@ export const GrammarShort: React.FC<{ timing: Timing }> = ({ timing }) => {
   const fr = (s: number) => Math.round(s * GFPS);
   return (
     <AbsoluteFill>
-      {timing.voiced && <Audio src={staticFile("grammar/voice.mp3")} />}
-      {!timing.voiced && <Audio src={staticFile("grammar/voice.mp3")} volume={0.6} />}
+      {timing.built && <Audio src={staticFile("grammar/voice.mp3")} volume={timing.voiced ? 1 : 0.6} />}
       <Sequence from={fr(S[0].start)} durationInFrames={fr(S[0].dur)}><Hook timing={timing} /></Sequence>
       {[1, 2, 3, 4].map((i) => (
         <Sequence key={i} from={fr(S[i].start)} durationInFrames={fr(S[i].dur)}><Mistake idx={i - 1} start={fr(S[i].start)} timing={timing} /></Sequence>
