@@ -64,7 +64,7 @@ for sc in data["scenes"]:
     for k, ln in enumerate(sc["say"]):
         key = f"{sc['id']}_{k}"
         at = sc["start"] + ln["at"]
-        nxt = sc["say"][k + 1]["at"] if k + 1 < len(sc["say"]) else sc["dur"] - 0.2
+        nxt = sc["say"][k + 1]["at"] if k + 1 < len(sc["say"]) else sc["dur"] - 0.35
         room = sc["start"] + nxt - at - 0.15
         if silent:
             d = max(1.0, len(ln["text"].split()) / 2.6)
@@ -75,6 +75,8 @@ for sc in data["scenes"]:
             if d > room:
                 ratio = d / room
                 if ratio > 1.35:
+                    # too long for its slot: the video would drift, so stop instead of shipping a bad cut
+                    print(f"ERROR: {key} too long", file=sys.stderr)
                     print(f"WARNING: {key} is {d:.1f}s but only {room:.1f}s fits. Shorten the line.", file=sys.stderr)
                 ratio = min(ratio, 1.35)
                 q = p + ".fast.mp3"
@@ -94,9 +96,10 @@ for sc in data["scenes"]:
 sfx_times = []
 for sc in data["scenes"]:
     if sc["id"].startswith("m"):
-        sfx_times += [(sc["start"] + 1.5, "pop"), (sc["start"] + 3.4, "ding"), (sc["start"] + 4.4, "pop")]
+        fx = sc["say"][1]["at"] - 0.3
+        sfx_times += [(sc["start"] + 0.2, "pop"), (sc["start"] + fx, "ding"), (sc["start"] + fx + 0.5, "pop")]
     elif sc["id"] == "hook":
-        sfx_times += [(sc["start"] + t, "pop") for t in (2.2, 2.7, 3.2, 3.7)]
+        sfx_times += [(sc["start"] + t, "pop") for t in (0.8, 1.6)]
 total = data["total"]
 bed = np.zeros(int(SR * total), dtype=np.float32)
 for t0, kind in sfx_times:
@@ -113,7 +116,7 @@ else:
     inputs += ["-i", sfx_path]
     labels.append(f"[{n}:a]"); n += 1
     graph = ";".join(filters) + (";" if filters else "") + "".join(labels) + \
-        f"amix=inputs={n}:normalize=0:duration=longest,loudnorm=I=-16:TP=-1.5:LRA=9[out]"
+        f"amix=inputs={n}:normalize=0:duration=longest,loudnorm=I=-16:TP=-1.5:LRA=9,apad[out]"
     run(["ffmpeg", "-y", *inputs, "-filter_complex", graph, "-map", "[out]", "-t", str(total),
          "-codec:a", "libmp3lame", "-b:a", "160k", final])
 

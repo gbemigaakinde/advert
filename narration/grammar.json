@@ -1,30 +1,26 @@
 {
   "title": "4 grammar mistakes in under a minute",
   "fps": 30,
-  "total": 57.5,
+  "total": 56,
   "scenes": [
     { "id": "hook", "start": 0, "dur": 7, "say": [
-      { "who": "amina", "at": 0.4, "text": "Be honest. How many of these did you type this week?" },
-      { "who": "tobi",  "at": 4.6, "text": "Maybe all of them." } ] },
+      { "who": "amina", "at": 0.5, "text": "Would you hit send? Be honest." },
+      { "who": "amina", "at": 3.8, "text": "Four mistakes. Under a minute." } ] },
     { "id": "m1", "start": 7, "dur": 10, "say": [
-      { "who": "amina", "at": 0.4, "text": "Number one." },
-      { "who": "tobi",  "at": 1.6, "text": "Your welcome!" },
-      { "who": "amina", "at": 3.3, "text": "Close, but no. You're means you are. If you are fits, keep the apostrophe." } ] },
+      { "who": "amina", "at": 0.3, "text": "Mistake one. Your welcome." },
+      { "who": "amina", "at": 3.2, "text": "Your belongs to you. You're means you are. Say it in full, and it fits." } ] },
     { "id": "m2", "start": 17, "dur": 10, "say": [
-      { "who": "amina", "at": 0.4, "text": "Number two." },
-      { "who": "tobi",  "at": 1.6, "text": "I could of gone." },
-      { "who": "amina", "at": 3.3, "text": "Could have. We say could've, so our ears hear of. Don't trust your ears." } ] },
+      { "who": "amina", "at": 0.3, "text": "Mistake two. I could of gone." },
+      { "who": "amina", "at": 3.2, "text": "Could have. We say could've, so our ears hear of. Our ears are lying." } ] },
     { "id": "m3", "start": 27, "dur": 10, "say": [
-      { "who": "amina", "at": 0.4, "text": "Number three." },
-      { "who": "tobi",  "at": 1.6, "text": "Taller then me." },
-      { "who": "amina", "at": 3.3, "text": "Then when? Than compares. Then is time: first this, then that." } ] },
+      { "who": "amina", "at": 0.3, "text": "Mistake three. Less students came today." },
+      { "who": "amina", "at": 3.4, "text": "Can you count them? Then it's fewer. Less is for things you can't count." } ] },
     { "id": "m4", "start": 37, "dur": 10, "say": [
-      { "who": "amina", "at": 0.4, "text": "Number four." },
-      { "who": "tobi",  "at": 1.6, "text": "Don't loose your phone." },
-      { "who": "amina", "at": 3.3, "text": "Lose has lost an O. Loose kept both, and now it hangs about." } ] },
-    { "id": "outro", "start": 47, "dur": 10.5, "say": [
-      { "who": "amina", "at": 0.4, "text": "Four fixes. Zero excuses." },
-      { "who": "tobi",  "at": 2.8, "text": "And zero, your welcome." },
-      { "who": "amina", "at": 4.8, "text": "At Fahmid, we teach children to write well, and speak even better." } ] }
+      { "who": "amina", "at": 0.3, "text": "Mistake four. Me and Tola went home." },
+      { "who": "amina", "at": 3.4, "text": "Drop the other person. Me went home? No. So, Tola and I. Friend first." } ] },
+    { "id": "outro", "start": 47, "dur": 9, "say": [
+      { "who": "amina", "at": 0.4, "text": "Four fixed." },
+      { "who": "amina", "at": 1.8, "text": "Share this with a friend who still writes, your welcome." },
+      { "who": "amina", "at": 6.2, "text": "You're welcome." } ] }
   ]
 }
