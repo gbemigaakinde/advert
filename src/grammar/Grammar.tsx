@@ -241,7 +241,7 @@ const Outro: React.FC<{ start: number; timing: Timing }> = ({ start, timing }) =
       <div style={{ position: "absolute", top: 930, left: 60, width: 880, fontFamily: SANS, fontWeight: 700, fontSize: 46, lineHeight: 1.3, color: "#2B3D73", opacity: share, transform: `translateY(${(1 - share) * 20}px)` }}>
         Share this with a friend who still writes &ldquo;your welcome&rdquo;.
       </div>
-      <div style={{ position: "absolute", right: 60, bottom: 70, fontFamily: SANS, fontWeight: 700, fontSize: 34, color: theme.accent }}>www.fahmidschool.com.ng</div>
+      <div style={{ position: "absolute", right: 60, bottom: 70, fontFamily: SANS, fontWeight: 700, fontSize: 34, color: theme.accent }}>08061427297</div>
       <Stage bubble={"You’re welcome."} bubbleAt={last} mood="smile" talking={talkingNow(timing, start, f)} />
     </Fade>
   );
