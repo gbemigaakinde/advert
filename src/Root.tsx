@@ -1,7 +1,8 @@
 import React from "react";
-import { Composition } from "remotion";
+import { Composition, staticFile } from "remotion";
 import { FahmidAdvert } from "./FahmidAdvert";
 import { PortalGuide } from "./guide/PortalGuide";
+import { GrammarShort, GFPS, GTOTAL, fallbackTiming } from "./grammar/Grammar";
 import { buildPlan, FPS as GUIDE_FPS, GuidePlan } from "./guide/plan";
 
 const FPS = 30;
@@ -30,6 +31,24 @@ export const Root: React.FC = () => {
         calculateMetadata={async () => {
           const plan = await buildPlan();
           return { durationInFrames: plan.total, props: { plan } };
+        }}
+      />
+      {/* Grammar Short: 9:16 social explainer, under a minute */}
+      <Composition
+        id="GrammarShort"
+        component={GrammarShort as any}
+        durationInFrames={GTOTAL}
+        fps={GFPS}
+        width={1080}
+        height={1920}
+        defaultProps={{ timing: fallbackTiming() }}
+        calculateMetadata={async () => {
+          let timing = fallbackTiming();
+          try {
+            const r = await fetch(staticFile("grammar/timing.json"));
+            if (r.ok) timing = await r.json();
+          } catch (e) { /* not built yet: estimated timing */ }
+          return { props: { timing } };
         }}
       />
     </>
