@@ -8,6 +8,8 @@
     "capture": "node portal-capture/capture.mjs",
     "audio": "python3 narration/build_audio.py",
     "build:guide": "remotion render src/index.ts ParentPortalGuide out/fahmid-parent-portal-guide.mp4 --crf=18",
+    "audio:grammar": "python3 narration/build_grammar_audio.py",
+    "build:grammar": "remotion render src/grammar/index.ts GrammarShort out/fahmid-grammar-short.mp4 --crf=18",
     "start:guide": "remotion studio src/index.ts"
   },
   "dependencies": {
