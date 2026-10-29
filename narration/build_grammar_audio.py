@@ -117,6 +117,6 @@ else:
     run(["ffmpeg", "-y", *inputs, "-filter_complex", graph, "-map", "[out]", "-t", str(total),
          "-codec:a", "libmp3lame", "-b:a", "160k", final])
 
-json.dump({"voiced": not silent, "lines": timing}, open(os.path.join(OUT, "timing.json"), "w"), indent=1)
+json.dump({"built": True, "voiced": not silent, "lines": timing}, open(os.path.join(OUT, "timing.json"), "w"), indent=1)
 open(os.path.join(ROOT, "out", "grammar-subtitles.srt"), "w", encoding="utf-8").write("\n".join(srt))
 print("done:", "voiced" if not silent else "silent timing only", f"({len(timing)} lines)")
