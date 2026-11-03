@@ -8,3 +8,4 @@
 - If the voice service is unreachable, the workflow still makes a video (sound effects only) so you are never left with nothing.
 - Locally: `python3 narration/build_grammar_audio.py && npm run build:grammar`
 - Preview: `npx remotion studio src/grammar/index.ts`
+- Lip-sync: Amina's mouth follows the real narration. `build_grammar_audio.py` measures the voice frame by frame and saves `open` / `wide` values in `public/grammar/timing.json`; the video reads them. Change a line in `grammar.json` and the mouth re-syncs automatically on the next build.
