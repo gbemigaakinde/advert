@@ -1,24 +1,57 @@
 import React from "react";
 
 export type Mood = "calm" | "oops" | "smile";
-type Props = { frame: number; talking: boolean; mood?: Mood; point?: boolean };
+// mouth: driven by the real narration audio (see narration/build_grammar_audio.py).
+//   open: 0 = lips shut .. 1 = fully open     wide: 0 = round "oo/oh" shape .. 1 = wide "ee/s" shape
+// When it is not given (voice not built yet), the mouth falls back to a soft syllable rhythm.
+export type Mouth = { open: number; wide: number };
+type Props = { frame: number; talking: boolean; mood?: Mood; point?: boolean; mouth?: Mouth };
 
 const SKIN = "#8A5233";
 const HAIR = "#15110F";
 const NAVY = "#1B3A7A";
 const GOLD = "#C89F4D";
 
+const MOUTH = "#3A1410";
+
+// One continuous mouth shape: shut = the smile line, opening = the lips part and the corners come in or out.
+const TalkingMouth: React.FC<{ open: number; wide: number; mood: Mood }> = ({ open, wide, mood }) => {
+  const cx = 200, cy = 300;
+  const hw = 22 - open * (1 - wide) * 12;                       // half-width: round sounds pull the corners in
+  const yc = cy + open * 6;                                      // corners drop a little as the jaw opens
+  const closedMid = mood === "oops" ? 305 : mood === "smile" ? 313 : 311;
+  const topMid = closedMid - open * 9;
+  const botMid = closedMid + open * 22;
+  const topCtl = 2 * topMid - yc, botCtl = 2 * botMid - yc;      // quadratic curves pass halfway to their control point
+  const x1 = cx - hw, x2 = cx + hw;
+  const d = `M${x1} ${yc} Q${cx} ${topCtl} ${x2} ${yc} Q${cx} ${botCtl} ${x1} ${yc}Z`;
+  return (
+    <g>
+      <defs><clipPath id="mouthClip"><path d={d} /></clipPath></defs>
+      <path d={d} fill={MOUTH} stroke={MOUTH} strokeWidth={5} strokeLinejoin="round" strokeLinecap="round" />
+      <g clipPath="url(#mouthClip)">
+        {open > 0.25 && <rect x={cx - 30} y={topMid - 2} width={60} height={4 + open * 5} rx={3} fill="#fff" opacity={0.92} />}
+        {open > 0.2 && <ellipse cx={cx} cy={botMid + 1} rx={hw * 0.6} ry={4 + open * 7} fill="#C9585A" />}
+      </g>
+    </g>
+  );
+};
+
 // Amina: one reusable mascot. Hair in two buns, navy school sweater, gold crest, red pencil.
-export const Mascot: React.FC<Props> = ({ frame, talking, mood = "calm", point = false }) => {
+export const Mascot: React.FC<Props> = ({ frame, talking, mood = "calm", point = false, mouth: m }) => {
   const blink = frame % 120 < 5 ? 0.1 : 1;
-  const open = talking ? 4 + Math.abs(Math.sin(frame * 0.8)) * 11 : 0;
+  let mo: Mouth | null = null;
+  if (talking) {
+    // Real audio values when we have them. Otherwise a gentle fallback (about 4 syllables a second).
+    mo = m ?? { open: Math.abs(Math.sin((frame * Math.PI) / 6.5)) * (0.55 + 0.45 * Math.sin(frame * 0.13) ** 2), wide: 0.5 };
+  }
   const mouth =
-    open > 0 ? (
-      <ellipse cx="200" cy="306" rx="14" ry={open} fill="#3A1410" />
+    mo ? (
+      <TalkingMouth open={mo.open} wide={mo.wide} mood={mood} />
     ) : mood === "oops" ? (
-      <ellipse cx="200" cy="308" rx="8" ry="11" fill="#3A1410" />
+      <ellipse cx="200" cy="308" rx="8" ry="11" fill={MOUTH} />
     ) : (
-      <path d="M178 300 Q200 322 222 300" stroke="#3A1410" strokeWidth="6" fill="none" strokeLinecap="round" />
+      <path d="M178 300 Q200 322 222 300" stroke={MOUTH} strokeWidth="6" fill="none" strokeLinecap="round" />
     );
   const brow = mood === "oops" ? -10 : 0;
   const bob = Math.sin(frame * 0.08) * 3;

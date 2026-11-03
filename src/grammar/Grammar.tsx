@@ -15,7 +15,8 @@ const RED = "#D63B3B";
 const INK = "#16213E";
 const GREEN = theme.green;
 
-export type Timing = { built?: boolean; voiced: boolean; lines: Record<string, { at: number; dur: number; who: string }> };
+// open / wide: one value per video frame, measured from the real narration audio (build_grammar_audio.py).
+export type Timing = { built?: boolean; voiced: boolean; lines: Record<string, { at: number; dur: number; who: string }>; open?: number[]; wide?: number[] };
 
 export const fallbackTiming = (): Timing => {
   const lines: Timing["lines"] = {};
@@ -85,15 +86,25 @@ const Header: React.FC<{ idx?: number }> = ({ idx }) => (
   </div>
 );
 
-const Stage: React.FC<{ bubble?: string; bubbleAt?: number; mood: Mood; talking: boolean; point?: boolean }> = ({ bubble, bubbleAt = 0, mood, talking, point }) => {
+const talkingNow = (timing: Timing, sceneStart: number, f: number) => {
+  const t = (sceneStart + f) / GFPS;
+  return Object.values(timing.lines).some((l) => t >= l.at && t <= l.at + l.dur);
+};
+
+const Stage: React.FC<{ bubble?: string; bubbleAt?: number; mood: Mood; timing: Timing; start: number; point?: boolean }> = ({ bubble, bubbleAt = 0, mood, timing, start, point }) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig();
+  // f restarts at 0 in every scene (each scene is a <Sequence>), but the audio-measured mouth values are indexed by the
+  // frame of the whole video, so add the scene's start frame.
+  const g = start + f;
+  const talking = talkingNow(timing, start, f);
+  const mouth = timing.open ? { open: timing.open[g] ?? 0, wide: timing.wide?.[g] ?? 0.5 } : undefined;
   const enter = interpolate(spring({ frame: f - 3, fps, config: { damping: 18 } }), [0, 1], [320, 0]);
   const b = pop(f, bubbleAt, fps);
   return (
     <>
       <div style={{ position: "absolute", left: -260, top: 1340, width: 820, height: 820, borderRadius: "50%", background: theme.accentPale }} />
       <div style={{ position: "absolute", left: 30, bottom: 0, width: 440, height: 572, transform: `translateY(${enter}px)` }}>
-        <Mascot frame={f} talking={talking} mood={mood} point={point} />
+        <Mascot frame={g} talking={talking} mood={mood} point={point} mouth={mouth} />
       </div>
       {bubble && (
         <div style={{ position: "absolute", left: 500, top: 1420, width: 520, background: theme.accent, borderRadius: 32, padding: "30px 38px", color: "#fff", fontFamily: SANS, fontWeight: 700, fontSize: 42, lineHeight: 1.28, opacity: b, transform: `translateY(${(1 - b) * 24}px) scale(${0.92 + 0.08 * b})`, transformOrigin: "left center", boxShadow: "0 14px 34px rgba(27,58,122,0.22)" }}>
@@ -108,11 +119,6 @@ const Fade: React.FC<{ out?: boolean; children: React.ReactNode }> = ({ out = tr
   const f = useCurrentFrame(); const { durationInFrames } = useVideoConfig();
   const o = interpolate(f, [0, 5, durationInFrames - 6, durationInFrames], [0, 1, 1, out ? 0 : 1], clamp);
   return <AbsoluteFill style={{ opacity: o }}>{children}</AbsoluteFill>;
-};
-
-const talkingNow = (timing: Timing, sceneStart: number, f: number) => {
-  const t = (sceneStart + f) / GFPS;
-  return Object.values(timing.lines).some((l) => t >= l.at && t <= l.at + l.dur);
 };
 
 const Phone: React.FC<{ f: number; fps: number; recvAt: number; sendAt: number }> = ({ f, fps, recvAt, sendAt }) => {
@@ -146,7 +152,7 @@ const Hook: React.FC<{ timing: Timing }> = ({ timing }) => {
         Would you<br />hit <span style={{ color: theme.gold }}>send?</span>
       </div>
       <Phone f={f} fps={fps} recvAt={recv} sendAt={send} />
-      <Stage bubble="Be honest." bubbleAt={honest} mood={f < honest ? "oops" : "calm"} talking={talkingNow(timing, 0, f)} />
+      <Stage bubble="Be honest." bubbleAt={honest} mood={f < honest ? "oops" : "calm"} timing={timing} start={0} />
     </Fade>
   );
 };
@@ -213,7 +219,7 @@ const Mistake: React.FC<{ idx: number; start: number; dur: number; timing: Timin
           <div style={{ alignSelf: "flex-start", background: theme.goldLight, color: theme.goldDark, fontFamily: SANS, fontWeight: 700, fontSize: 32, padding: "14px 30px", borderRadius: 30, opacity: pt, transform: `translateY(${(1 - pt) * 16}px)` }}>{m.tag}</div>
         </div>
       </div>
-      <Stage bubble={m.bubble} bubbleAt={fixAt + 6} mood={f < fixAt ? "oops" : "smile"} talking={talkingNow(timing, start, f)} />
+      <Stage bubble={m.bubble} bubbleAt={fixAt + 6} mood={f < fixAt ? "oops" : "smile"} timing={timing} start={start} />
     </Fade>
   );
 };
@@ -242,7 +248,7 @@ const Outro: React.FC<{ start: number; timing: Timing }> = ({ start, timing }) =
         Share this with a friend who still writes &ldquo;your welcome&rdquo;.
       </div>
       <div style={{ position: "absolute", right: 60, bottom: 70, fontFamily: SANS, fontWeight: 700, fontSize: 34, color: theme.accent }}>08061427297</div>
-      <Stage bubble={"You’re welcome."} bubbleAt={last} mood="smile" talking={talkingNow(timing, start, f)} />
+      <Stage bubble={"You’re welcome."} bubbleAt={last} mood="smile" timing={timing} start={start} />
     </Fade>
   );
 };
